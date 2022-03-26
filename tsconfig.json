@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "moduleResolution": "node",
+    "strict": true,
+    "target": "es6",
+    "rootDir": "src/",
+    "outDir": "dist/",
+    "jsx": "react",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": false,
+  },
+  "include": [
+    "src/"
+  ]
+}
