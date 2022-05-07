@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "name": "Ordered Dropdown",
   "publisher": "njpaul",
+  "galleryFlags": [
+    "Public"
+  ],
   "description": "Order dropdown items in a custom order instead of alphabetically",
   "tags": ["dropdown", "picklist"],
   "repository": {
