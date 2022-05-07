@@ -1,14 +1,33 @@
 {
   "manifestVersion": 1,
   "id": "ordered-dropdown",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "name": "Ordered Dropdown",
   "publisher": "njpaul",
   "description": "Order dropdown items in a custom order instead of alphabetically",
   "tags": ["dropdown", "picklist"],
   "repository": {
     "type": "git",
-    "uri": ""
+    "uri": "https://github.com/njpaul/azure-devops-ordered-dropdown"
+  },
+  "icons": {
+    "default": "images/logo.png"
+  },
+  "links": {
+    "getstarted": {
+      "uri": "https://github.com/njpaul/azure-devops-ordered-dropdown"
+    },
+    "license": {
+      "uri": "https://github.com/njpaul/azure-devops-ordered-dropdown/blob/main/LICENSE"
+    },
+    "support": {
+      "uri": "https://github.com/njpaul/azure-devops-ordered-dropdown/issues"
+    }
+  },
+  "content": {
+    "details": {
+      "path": "README.md"
+    }
   },
   "categories": [
     "Azure Boards"
