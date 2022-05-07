@@ -17,6 +17,7 @@ The backing field is synchronized with the Ordered Dropdown, so changes to one w
 
 _Since the Ordered Dropdown is a control, not a field, queries will need to be against the backing field._
 _Likewise, the Ordered Dropdown cannot be shown in certain views, like on the Cards the "Board" view._
+_However, the control can have the same name as its backing field._
 
 ## Usage
 First you need a backing field for the control.
