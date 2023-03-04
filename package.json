@@ -5,11 +5,15 @@
   "private": true,
   "scripts": {
     "build": "npm run compile && npm run package",
-    "build:dev": "npm run compile:dev && npm run package",
+    "build:dev": "npm run compile:dev && npm run package:dev",
     "compile": "webpack --mode production",
     "compile:dev": "webpack --mode development",
     "clean": "rimraf ./dist",
-    "package": "tfx extension create --manifests azure-devops-extension.json"
+    "clean-all": "rimraf ./dist ./package",
+    "dev-server": "npx http-server ./ --tls -c-1",
+    "package": "tfx extension create --manifests azure-devops-extension.json --output-path ./package",
+    "package:dev": "tfx extension create --manifests azure-devops-extension-dev.json --output-path ./package --rev-version",
+    "watch": "webpack --mode development --watch"
   },
   "dependencies": {
     "@types/react": "~16.14.24",
@@ -23,6 +27,7 @@
   "devDependencies": {
     "css-loader": "~6.7.1",
     "html-webpack-plugin": "~5.5.0",
+    "http-server": "~14.1.1",
     "rimraf": "~3.0.2",
     "style-loader": "~3.3.1",
     "tfx-cli": "~0.11.0",
