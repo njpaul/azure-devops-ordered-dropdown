@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npm run compile && npm run package",
     "build:dev": "npm run compile:dev && npm run package:dev",
+    "build:preview": "npm run compile:dev && npm run package:preview",
     "compile": "webpack --mode production",
     "compile:dev": "webpack --mode development",
     "clean": "rimraf ./dist",
@@ -13,6 +14,7 @@
     "dev-server": "npx http-server ./ --tls -c-1",
     "package": "tfx extension create --manifests azure-devops-extension.json --output-path ./package",
     "package:dev": "tfx extension create --manifests azure-devops-extension-dev.json --output-path ./package --rev-version",
+    "package:preview": "tfx extension create --manifests azure-devops-extension-preview.json --output-path ./package --rev-version",
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
