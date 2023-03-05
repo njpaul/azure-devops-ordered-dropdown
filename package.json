@@ -16,11 +16,12 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "@fluentui/react": "~8.106.2",
+    "@fluentui/react-icons": "~2.0.195",
     "@types/react": "~16.14.24",
     "@types/react-dom": "~16.9.14",
     "azure-devops-extension-api": "~1.158.0",
     "azure-devops-extension-sdk": "~2.0.11",
-    "azure-devops-ui": "~2.167.60",
     "react": "~16.14.0",
     "react-dom": "~16.14.0"
   },

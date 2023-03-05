@@ -4,17 +4,17 @@ import {
   WorkItemTrackingServiceIds
 } from 'azure-devops-extension-api/WorkItemTracking'
 import * as SDK from 'azure-devops-extension-sdk'
-import { ObservableArray } from 'azure-devops-ui/Core/Observable'
-import { EditableDropdown } from 'azure-devops-ui/EditableDropdown'
+
+import { ComboBox, IComboBox } from '@fluentui/react';
+import type { IComboBoxOption, IComboBoxStyles } from '@fluentui/react';
+import { initializeIcons } from '@fluentui/react/lib/Icons';
 
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 
-import 'azure-devops-ui/Core/override.css'
+// import 'azure-devops-ui/Core/override.css'
 
 import './index.css'
-import { ListSelection } from 'azure-devops-ui/List'
-import { Dropdown } from 'azure-devops-ui/Dropdown'
 
 type OrderedDropdownProps = {
   items: string[],
@@ -157,27 +157,57 @@ type OrderedDropdownProps = {
 // }
 
 const OrderedDropdown = (props: OrderedDropdownProps): JSX.Element => {
-  const [selection] = useState(new ListSelection())
-  
-  useEffect(() => {
-    const selectionIndex = props.items.findIndex(i => i === props.selected)
-    if (selectionIndex >= 0) {
-      selection.select(selectionIndex)
-    }
-    else {
-      selection.clear()
-    }
-    console.log(selectionIndex)
-  })
+  const ref = React.useRef<IComboBox>(null)
+  const options = props.items.map(i => ({ key: i, text: i}))
+
+  // useEffect(() => {
+  //   const selectionIndex = props.items.findIndex(i => i === props.selected)
+  //   if (selectionIndex >= 0) {
+  //     selection.select(selectionIndex)
+  //   }
+  //   else {
+  //     selection.clear()
+  //   }
+  //   console.log(selectionIndex)
+  // })
 
   return (
-    <EditableDropdown
-      items={props.items}
-      selection={selection}
-      // onSelect={(e, item) => props.onSelect(item?.text)}
-      onValueChange={newValue => props.onSelect(newValue?.text)}
-      onCollapse={props.onCollapse}
-      onExpand={props.onExpand}
+    <ComboBox 
+      componentRef={ref}
+      options={options}
+      selectedKey={props.selected}
+      text={props.selected}
+      onInputValueChange={newValue => props.onSelect(newValue)}
+      onChange={(_, option) => {
+        console.log('change')
+        console.log(option)
+        if (typeof option !== 'undefined') {
+          props.onSelect(option.text)
+        }
+      }}
+      // onPendingValueChanged={option => {
+      //   console.log('pending')
+      //   console.log(option)
+      //   if (option) {
+      //     props.onSelect(option.text)
+      //   }
+      // }}
+      autoComplete='on'
+      allowFreeInput
+      allowFreeform  
+      useComboBoxAsMenuWidth
+
+      // The menu won't dismiss automatically if we change focus
+      onBlur={() => ref.current?.dismissMenu()}
+      
+      // Can't click on the input to open with allowFreeform set, so we have
+      // to handle it ourselves
+      onFocus={() => ref.current?.focus(true)}
+
+      // calloutProps={{ doNotLayer: true }}
+      onMenuOpen={props.onExpand}
+      onMenuDismissed={props.onCollapse}
+      // persistMenu
     />
   )
 }
@@ -208,9 +238,11 @@ const Extension = (): JSX.Element => {
         onRefreshed: () => initState(),
         
         onFieldChanged: args => {
+          console.log('onFieldChanged')
+          // console.log(JSON.stringify(args))
           const fieldRef = SDK.getConfiguration().witInputs.FieldName as string
 
-          if (args.changedFields[fieldRef]) {
+          if (typeof args.changedFields[fieldRef] !== 'undefined') {
             setSelected(args.changedFields[fieldRef])
           }
         }
@@ -225,33 +257,35 @@ const Extension = (): JSX.Element => {
 
 
   // Resize the extension area as necessary
-  // useLayoutEffect(() => {
-  //   const root = document.documentElement
-  //   console.log(root)
-  //   console.log(root?.scrollWidth, root?.scrollHeight)
-  //   SDK.resize(root?.scrollWidth, root?.scrollHeight)
-  //   // SDK.resize(root?.scrollWidth, 500)
-  // }, [expanded])
   useLayoutEffect(() => {
-    SDK.resize(document.documentElement?.scrollWidth, 500)
-  })
+    window.setTimeout(() => {
+      const root = document.documentElement
+      console.log(root)
+      console.log(root?.scrollWidth, root?.scrollHeight)
+      // SDK.resize(root?.scrollWidth, root?.scrollHeight)
+      SDK.resize(root?.scrollWidth, 500)
+    })
+  }, [expanded])
+  // useLayoutEffect(() => {
+  //   SDK.resize(document.documentElement?.scrollWidth, 500)
+  // })
 
-  // const resize = () => {
-  //   const root = document.getElementById('root')
-  //   console.log(root?.scrollWidth, root?.scrollHeight)
-  //   SDK.resize(root?.scrollWidth, root?.scrollHeight)
-  // }
+  const resize = () => {
+    const root = document.getElementById('root')
+    console.log(root?.scrollWidth, root?.scrollHeight)
+    // SDK.resize(root?.scrollWidth, root?.scrollHeight)
+    SDK.resize(document.documentElement?.scrollWidth, 500)
+  }
 
 
   const setBackingFieldValue = async (value: string | undefined): Promise<void> => {
-    if (!value) { return }
-
+    console.log('setBackingFieldValue')
     const fieldRef = SDK.getConfiguration().witInputs.FieldName as string
     const service = await SDK.getService<IWorkItemFormService>(
       WorkItemTrackingServiceIds.WorkItemFormService
     )
 
-    service.setFieldValue(fieldRef, value)
+    service.setFieldValue(fieldRef, value ?? '')
   }
 
   // Only render after we're done loading. The EditableDropdown captures the
@@ -307,5 +341,6 @@ const getSelectionFromField = async () => {
 }
 
 
+initializeIcons()
 SDK.init({ applyTheme: true, loaded: true })
   .then(() => ReactDOM.render(<Extension />, document.getElementById('root')))
