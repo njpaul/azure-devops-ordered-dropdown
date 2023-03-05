@@ -158,18 +158,8 @@ type OrderedDropdownProps = {
 
 const OrderedDropdown = (props: OrderedDropdownProps): JSX.Element => {
   const ref = React.useRef<IComboBox>(null)
-  const options = props.items.map(i => ({ key: i, text: i}))
-
-  // useEffect(() => {
-  //   const selectionIndex = props.items.findIndex(i => i === props.selected)
-  //   if (selectionIndex >= 0) {
-  //     selection.select(selectionIndex)
-  //   }
-  //   else {
-  //     selection.clear()
-  //   }
-  //   console.log(selectionIndex)
-  // })
+  const options = props.items.map(i => ({ key: i, text: i }))
+  const [isOpen, setIsOpen] = React.useState(false)
 
   return (
     <ComboBox 
@@ -194,20 +184,33 @@ const OrderedDropdown = (props: OrderedDropdownProps): JSX.Element => {
       // }}
       autoComplete='on'
       allowFreeInput
-      allowFreeform  
+      allowFreeform
       useComboBoxAsMenuWidth
 
       // The menu won't dismiss automatically if we change focus
       onBlur={() => ref.current?.dismissMenu()}
       
       // Can't click on the input to open with allowFreeform set, so we have
-      // to handle it ourselves
-      onFocus={() => ref.current?.focus(true)}
+      // to handle it ourselves. We need to not do this if the menu is already
+      // opened, otherwise clicking the button will propagate the event and
+      // we'll end up closing the menu immediately.
+      onClick={() => { if (!isOpen) { ref.current?.focus(true) } }}
 
-      // calloutProps={{ doNotLayer: true }}
-      onMenuOpen={props.onExpand}
-      onMenuDismissed={props.onCollapse}
-      // persistMenu
+      calloutProps={{
+        // Render inline so we can get a height
+        doNotLayer: true,
+
+        // Prevent dismiss on resize
+        preventDismissOnEvent: () => true,
+      }}
+      onMenuOpen={() => {
+        setIsOpen(true)
+        props.onExpand()
+      }}
+      onMenuDismissed={() => {
+        setIsOpen(false)
+        props.onCollapse()
+      }}
     />
   )
 }
@@ -217,7 +220,6 @@ const Extension = (): JSX.Element => {
   const [items, setItems] = useState<string[]>([])
   const [selected, setSelected] = useState('')
   const [expanded, setExpanded] = useState(false)
-  const extensionElement = useRef<HTMLDivElement>(null)
 
   const initState = () =>
     Promise.all([
@@ -258,23 +260,15 @@ const Extension = (): JSX.Element => {
 
   // Resize the extension area as necessary
   useLayoutEffect(() => {
-    window.setTimeout(() => {
-      const root = document.documentElement
-      console.log(root)
-      console.log(root?.scrollWidth, root?.scrollHeight)
-      // SDK.resize(root?.scrollWidth, root?.scrollHeight)
-      SDK.resize(root?.scrollWidth, 500)
-    })
-  }, [expanded])
-  // useLayoutEffect(() => {
-  //   SDK.resize(document.documentElement?.scrollWidth, 500)
-  // })
+    resize()
+  })
 
   const resize = () => {
     const root = document.getElementById('root')
-    console.log(root?.scrollWidth, root?.scrollHeight)
-    // SDK.resize(root?.scrollWidth, root?.scrollHeight)
-    SDK.resize(document.documentElement?.scrollWidth, 500)
+    // Add some space to the scroll height so that the menu doesn't try to
+    // overlap with the input box. Setting this to exactly the scroll height
+    // causes the menu to push up.
+    SDK.resize(root?.scrollWidth, Math.max(50, (root?.scrollHeight ?? 0) + 20))
   }
 
 
