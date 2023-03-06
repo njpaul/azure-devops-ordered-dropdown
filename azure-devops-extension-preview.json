@@ -1,11 +1,11 @@
 {
   "manifestVersion": 1,
   "id": "ordered-dropdown-preview",
-  "version": "1.1.0.2",
+  "version": "1.1.0.3",
   "name": "Ordered Dropdown Preview",
   "publisher": "njpaul",
   "galleryFlags": [
-    "Preview"
+    "Public"
   ],
   "description": "Order dropdown items in a custom order instead of alphabetically",
   "tags": ["dropdown", "picklist"],
